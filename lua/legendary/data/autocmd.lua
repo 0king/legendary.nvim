@@ -8,6 +8,8 @@ local Filters = require('legendary.data.filters')
 ---@field implementation string|function
 ---@field opts table
 ---@field description string
+---@field keywords string[]
+---@field category string|nil
 ---@field group string|integer|nil
 ---@field frecency_id fun(self):string
 ---@field class Autocmd
@@ -22,6 +24,8 @@ function Autocmd:parse(tbl) -- luacheck: no unused
     ['1'] = { tbl[1], { 'string', 'table' } },
     ['2'] = { tbl[2], { 'string', 'function' } },
     description = { util.get_desc(tbl), { 'string' }, true },
+    keywords = { tbl.keywords, { 'string', 'table' }, true },
+    category = { tbl.category, { 'string' }, true },
     opts = { tbl.opts, { 'table' }, true },
     group = { tbl.group, { 'string', 'number' }, true },
     hide = { tbl.hide, { 'boolean' }, true },
@@ -34,6 +38,8 @@ function Autocmd:parse(tbl) -- luacheck: no unused
   instance.implementation = tbl[2]
   instance.opts = tbl.opts
   instance.description = util.get_desc(tbl)
+  instance.keywords = util.get_keywords(tbl)
+  instance.category = util.get_category(tbl)
   instance.group = tbl.group
   instance.hide = util.bool_default(tbl.hide, false)
   instance:parse_filters(tbl.filters)
@@ -53,11 +59,29 @@ function Autocmd:apply()
 end
 
 function Autocmd:id()
-  return string.format('%s %s', table.concat(self.events, ','), self.description)
+  return string.format(
+    '%s %s %s',
+    table.concat(self.events, ','),
+    self.description,
+    table.concat(self.keywords or {}, ' ')
+  )
 end
 
 function Autocmd:frecency_id()
-  return self.description
+  return string.format('%s %s', self.description, table.concat(self.keywords or {}, ' '))
+end
+
+---Return a searchable string combining events, description, category and keywords.
+---@return string
+function Autocmd:search_text()
+  local parts = { table.concat(self.events, ','), self.description }
+  if self.category then
+    table.insert(parts, self.category)
+  end
+  for _, kw in ipairs(self.keywords or {}) do
+    table.insert(parts, kw)
+  end
+  return table.concat(parts, ' ')
 end
 
 function Autocmd:with_group(group)

@@ -32,6 +32,12 @@ local functions = {
 }
 ```
 
+## Search keywords and categories (command palette)
+
+Like [keymaps](./KEYMAPS.md#search-keywords-and-categories-command-palette),
+functions accept `keywords` and `category`, which are embedded in the finder
+display text so any `vim.ui.select()` picker matches on concepts.
+
 ## Options
 
 You can also pass options via the `opts` property:

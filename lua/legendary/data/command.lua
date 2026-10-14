@@ -19,6 +19,8 @@ local Toolbox = require('legendary.toolbox')
 ---@field cmd string
 ---@field implementation string|function|ModeCommand|nil
 ---@field description string
+---@field keywords string[]
+---@field category string|nil
 ---@field opts table
 ---@field unfinished boolean
 ---@field filters (function[])|nil
@@ -71,6 +73,8 @@ function Command:parse(tbl, builtin) -- luacheck: no unused
     ['2'] = { tbl[2], { 'string', 'function', 'table' }, true },
     opts = { tbl.opts, { 'table' }, true },
     description = { util.get_desc(tbl), { 'string' }, true },
+    keywords = { tbl.keywords, { 'string', 'table' }, true },
+    category = { tbl.category, { 'string' }, true },
     unfinished = { tbl.unfinished, { 'boolean' }, true },
     hide = { tbl.hide, { 'boolean' }, true },
   })
@@ -79,6 +83,8 @@ function Command:parse(tbl, builtin) -- luacheck: no unused
 
   instance.cmd = tbl[1]
   instance.description = util.get_desc(tbl)
+  instance.keywords = util.get_keywords(tbl)
+  instance.category = util.get_category(tbl)
   instance.opts = tbl.opts
   instance.unfinished = util.bool_default(tbl.unfinished, false)
   instance.implementation = tbl[2]
@@ -125,11 +131,24 @@ function Command:apply()
 end
 
 function Command:id()
-  return string.format('%s %s', self.cmd, self.description)
+  return string.format('%s %s %s', self.cmd, self.description, table.concat(self.keywords or {}, ' '))
 end
 
 function Command:frecency_id()
   return self:id()
+end
+
+---Return a searchable string combining cmd, description, category and keywords.
+---@return string
+function Command:search_text()
+  local parts = { self.cmd, self.description }
+  if self.category then
+    table.insert(parts, self.category)
+  end
+  for _, kw in ipairs(self.keywords or {}) do
+    table.insert(parts, kw)
+  end
+  return table.concat(parts, ' ')
 end
 
 ---Return self.cmd with leading : or <cmd> and trailing <cr> removed

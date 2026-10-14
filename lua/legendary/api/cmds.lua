@@ -35,6 +35,7 @@ end, {
         return
       end
 
+      -- `:Legendary palette` is an alias for the unified command palette
       l.find()
     end,
     description = 'Find keymaps and commands with vim.ui.select()',
@@ -57,9 +58,28 @@ end, {
           return { 'functions' }
         end
 
-        return { 'keymaps', 'commands', 'autocmds', 'functions' }
+        if arg_lead and vim.trim(arg_lead):sub(1, 1):lower() == 'p' then
+          return { 'palette' }
+        end
+
+        return { 'keymaps', 'commands', 'autocmds', 'functions', 'palette' }
       end,
     },
+  },
+  {
+    ':CommandPalette',
+    function()
+      -- Unified VS Code-like palette: all keymaps, commands, functions and
+      -- autocmds (including builtins) in one fuzzy search. Bind it to
+      -- `<C-S-P>` in normal, visual and insert modes, e.g.:
+      --   vim.keymap.set({ 'n', 'x', 'i' }, '<C-S-P>', '<cmd>CommandPalette<cr>',
+      --     { desc = 'Command Palette' })
+      -- Note: some terminals send `<C-S-P>` as `<C-p>`; map both if needed.
+      require('legendary').find()
+    end,
+    description = 'Open the unified command palette (all actions, commands and keymaps)',
+    keywords = { 'palette', 'command', 'action', 'search', 'find' },
+    category = 'Palette',
   },
   {
     ':LegendaryRepeat',

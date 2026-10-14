@@ -27,6 +27,19 @@ local keymaps = {
 }
 ```
 
+## Search keywords and categories (command palette)
+
+Keymaps, commands and functions accept `keywords` (a string or list of strings) and
+`category` (a string). Both are embedded in the finder display text
+(`Description [Category] (keyword, ...)`) and in the item's searchable text,
+so any `vim.ui.select()` picker fuzzy-matches on human concepts:
+
+```lua
+local keymaps = {
+  { 'y', description = 'Copy to clipboard', category = 'Clipboard', keywords = { 'copy', 'yank' } },
+}
+```
+
 ## Hiding keymaps from the UI
 
 If you want to include a description, but do _not_ want the item to appear in the finder:

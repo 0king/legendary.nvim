@@ -74,6 +74,19 @@ local function lazy_load_stuff()
     State.items:add(vim.tbl_map(function(command)
       return Command:parse(command, true)
     end, Builtins.builtin_commands))
+
+    -- Palette action commands with real implementations (Copy, MoveLineDown,
+    -- ToggleComment, ...). Applied as user commands so they can be executed
+    -- from the palette; pcall guards against name collisions when the user
+    -- (e.g. LazyVim config) already defines one of these names.
+    local PaletteActions = require('legendary.data.palette_actions')
+    State.items:add(vim.tbl_map(function(command)
+      local item = Command:parse(command, true)
+      pcall(function()
+        item:apply()
+      end)
+      return item
+    end, PaletteActions.actions))
   end
 
   if Config.include_legendary_cmds then

@@ -22,6 +22,8 @@ local Filters = require('legendary.data.filters')
 ---@field keys string
 ---@field mode_mappings ModeKeymap
 ---@field description string
+---@field keywords string[]
+---@field category string|nil
 ---@field hide boolean
 ---@field opts table
 ---@field builtin boolean
@@ -44,6 +46,8 @@ function Keymap:parse(tbl, builtin) -- luacheck: no unused
     opts = { tbl.opts, { 'table' }, true },
     hide = { tbl.hide, { 'boolean' }, true },
     description = { util.get_desc(tbl), { 'string' }, true },
+    keywords = { tbl.keywords, { 'string', 'table' }, true },
+    category = { tbl.category, { 'string' }, true },
     filters = { tbl.filters, { 'table' }, true },
   })
 
@@ -66,6 +70,8 @@ function Keymap:parse(tbl, builtin) -- luacheck: no unused
   instance.keys = tbl[1]
   instance.hide = util.bool_default(tbl.hide, false)
   instance.description = util.get_desc(tbl)
+  instance.keywords = util.get_keywords(tbl)
+  instance.category = util.get_category(tbl)
   instance.opts = tbl.opts or {}
   instance.builtin = builtin or false
   instance:parse_filters(tbl.filters)
@@ -126,11 +132,32 @@ function Keymap:apply()
 end
 
 function Keymap:id()
-  return string.format('%s %s %s', self.keys, table.concat(self:modes(), ','), self.description)
+  return string.format(
+    '%s %s %s %s',
+    self.keys,
+    table.concat(self:modes(), ','),
+    self.description,
+    table.concat(self.keywords or {}, ' ')
+  )
 end
 
 function Keymap:frecency_id()
-  return string.format('%s', self.description)
+  return string.format('%s %s', self.description, table.concat(self.keywords or {}, ' '))
+end
+
+---Return a searchable string combining description, keys, category and keywords.
+---Used by custom pickers; the default formatter also embeds this in display text
+---so any `vim.ui.select()` handler can fuzzy-match on concepts.
+---@return string
+function Keymap:search_text()
+  local parts = { self.keys, table.concat(self:modes(), ','), self.description }
+  if self.category then
+    table.insert(parts, self.category)
+  end
+  for _, kw in ipairs(self.keywords or {}) do
+    table.insert(parts, kw)
+  end
+  return table.concat(parts, ' ')
 end
 
 function Keymap:modes()

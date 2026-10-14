@@ -243,13 +243,33 @@ require('legendary').setup({
 
 For more mapping features and more complicated setups see [Table Structures](./doc/table_structures/README.md).
 
+`legendary.nvim` ships a palette-complete builtin catalogue (operators like `y`/`dd`/`J`,
+folds like `za`/`zM`/`zR`, window/split keys, `gcc` comments, `<A-j/k>` line moves,
+LSP/Git/file actions) plus executable action commands (`:Copy`, `:Cut`, `:Paste`,
+`:SelectAll`, `:MoveLineDown`, `:DuplicateLineDown`, `:ToggleComment`, `:Format`,
+`:FoldAll`, `:SortLines`, `:TrimWhitespace`, ...). Items carry `category` badges and
+`keywords`, embedded in the finder text so any `vim.ui.select()` picker matches on
+human concepts (`copy`, `fold all`, `duplicate line`, `uppercase`, ...).
+
+VS Code-like binding for the palette in normal, visual and insert modes
+(note: some terminals send `<C-S-P>` as `<C-p>`, map both if needed):
+
+```lua
+vim.keymap.set({ 'n', 'x', 'i' }, '<C-S-P>', '<cmd>CommandPalette<cr>', { desc = 'Command Palette' })
+vim.keymap.set({ 'n', 'x', 'i' }, '<C-p>', '<cmd>CommandPalette<cr>', { desc = 'Command Palette' })
+vim.keymap.set({ 'n', 'x' }, '<leader>sp', '<cmd>CommandPalette<cr>', { desc = 'Command Palette' })
+```
+
 To trigger the finder for your configured keymaps, commands, `augroup`/`autocmd`s, and Lua functions:
 
 Commands:
 
 ```VimL
-" search keymaps, commands, and autocmds
+" search keymaps, commands, and autocmds (unified command palette)
 :Legendary
+
+" same unified palette under a VS Code-like name
+:CommandPalette
 
 " search keymaps
 :Legendary keymaps

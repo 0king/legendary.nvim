@@ -14,6 +14,19 @@ local commands = {
 }
 ```
 
+## Search keywords and categories (command palette)
+
+Like [keymaps](./KEYMAPS.md#search-keywords-and-categories-command-palette),
+commands accept `keywords` and `category`, which are embedded in the finder
+display text so typing a concept (e.g. `fold all`, `duplicate`, `uppercase`)
+finds the right command regardless of its Ex name:
+
+```lua
+local commands = {
+  { ':FoldAll', ':normal! zM', description = 'Close all folds', category = 'Fold', keywords = { 'fold', 'close', 'all' } },
+}
+```
+
 ## Hiding commands from the UI
 
 If you want to include a description but not hide it from the finder UI, you can set `hide = true`:

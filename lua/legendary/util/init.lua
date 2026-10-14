@@ -7,6 +7,31 @@ function M.get_desc(item)
   return item.description or item.desc or vim.tbl_get(item, 'opts', 'desc') or ''
 end
 
+---Get resolved item keywords used for palette search.
+---Accepts a string or list of strings, returns a list.
+---@param item table
+---@return string[]
+function M.get_keywords(item)
+  local keywords = item.keywords
+  if keywords == nil then
+    return {}
+  end
+  if type(keywords) == 'string' then
+    return { keywords }
+  end
+  if type(keywords) == 'table' then
+    return keywords
+  end
+  return {}
+end
+
+---Get resolved item category used for palette grouping/badges.
+---@param item table
+---@return string|nil
+function M.get_category(item)
+  return item.category
+end
+
 ---Helper to return a default value if a boolean is nil
 ---@param bool boolean|nil
 ---@param default boolean

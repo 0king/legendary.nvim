@@ -11,6 +11,47 @@ end
 
 ---@alias LegendaryItemFormatter fun(items:LegendaryItem[],mode:string):string[]
 
+---Build the searchable display text for an item, combining description,
+---category and keywords so any `vim.ui.select()` handler fuzzy-matches
+---on human concepts (e.g. "copy", "fold all") and not just keys/cmd names.
+---@param item LegendaryItem
+---@return string
+function M.search_text(item)
+  if type(item.search_text) == 'function' then
+    local ok, text = pcall(function()
+      return item:search_text()
+    end)
+    if ok and type(text) == 'string' and #text > 0 then
+      return text
+    end
+  end
+  return item.description or ''
+end
+
+---Decorate a description with `[category]` badge and keywords.
+---Keywords are embedded (not just appended invisibly) so every picker
+---matches them.
+---@param item LegendaryItem
+---@return string
+local function display_desc(item)
+  local desc = item.description or ''
+  local suffix_parts = {}
+  if item.category and #item.category > 0 then
+    table.insert(suffix_parts, string.format('[%s]', item.category))
+  end
+  local keywords = item.keywords or {}
+  if #keywords > 0 then
+    table.insert(suffix_parts, string.format('(%s)', table.concat(keywords, ', ')))
+  end
+  if #suffix_parts == 0 then
+    return desc
+  end
+  if #desc == 0 then
+    return table.concat(suffix_parts, ' ')
+  end
+  return string.format('%s %s', desc, table.concat(suffix_parts, ' '))
+end
+
 ---Default format
 ---@param item LegendaryItem
 ---@return string[]
@@ -19,13 +60,13 @@ function M.default_format(item)
     return {
       Config.icons.keymap or table.concat(item--[[@as Keymap]]:modes(), ', '),
       item.keys,
-      item.description,
+      display_desc(item),
     }
   elseif Toolbox.is_command(item) then
     return {
       Config.icons.command,
       item.cmd,
-      item.description,
+      display_desc(item),
     }
   elseif Toolbox.is_autocmd(item) then
     local pattern = vim.tbl_get(item, 'opts', 'pattern') or { '*' }
@@ -35,13 +76,13 @@ function M.default_format(item)
     return {
       table.concat(item.events, ', '),
       table.concat(pattern, ', '),
-      item.description,
+      display_desc(item),
     }
   elseif Toolbox.is_function(item) then
     return {
       Config.icons.fn,
       '<function>',
-      item.description,
+      display_desc(item),
     }
   elseif Toolbox.is_itemgroup(item) then
     return {
