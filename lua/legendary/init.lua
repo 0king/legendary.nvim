@@ -87,6 +87,19 @@ local function lazy_load_stuff()
       end)
       return item
     end, PaletteActions.actions))
+
+    -- Hand-written file-explorer catalogue: executable actions that adapt to
+    -- snacks.explorer/nvim-tree, plus description-only keymaps for the default
+    -- snacks.explorer bindings. The keymaps are not bound by legendary; they
+    -- are fed back to the explorer buffer when selected from the palette, so
+    -- they must be parsed as non-builtin items to preserve remapping.
+    local Explorer = require('legendary.data.explorer')
+    State.items:add(vim.tbl_map(function(keymap)
+      return Keymap:parse(keymap)
+    end, Explorer.keymaps))
+    State.items:add(vim.tbl_map(function(fn)
+      return Function:parse(fn)
+    end, Explorer.actions))
   end
 
   if Config.include_legendary_cmds then

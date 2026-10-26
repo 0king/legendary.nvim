@@ -114,6 +114,35 @@ describe('Keymap', function()
     end)
   end)
 
+  describe('execution', function()
+    it('restores the context buffer before feeding a filtered keymap', function()
+      local Executor = require('legendary.api.executor')
+      local buf = vim.api.nvim_create_buf(false, true)
+      vim.bo[buf].filetype = 'legendary_test_filtered'
+      local win = vim.api.nvim_open_win(buf, true, { split = 'right' })
+      local keymap = Keymap:parse({
+        'H',
+        description = 'Filtered test keymap',
+        filters = { filetype = 'legendary_test_filtered' },
+      })
+      local context = Executor.build_context()
+
+      -- Simulate a picker restoring focus to a different window.
+      local other = vim.api.nvim_create_buf(false, true)
+      local other_win = vim.api.nvim_open_win(other, true, { split = 'left' })
+      assert.are_not.same(buf, vim.api.nvim_get_current_buf())
+
+      Executor.exec_item(keymap, context)
+      vim.wait(500, function()
+        return vim.api.nvim_get_current_buf() == buf
+      end, 10)
+      assert.are.same(buf, vim.api.nvim_get_current_buf())
+
+      vim.api.nvim_win_close(other_win, true)
+      vim.api.nvim_win_close(win, true)
+    end)
+  end)
+
   describe('from_vimscript', function()
     -- map of keymapping cmds to the mode(s) they indicate and whether it indicates remap or noremap
     local cmds = {

@@ -83,6 +83,23 @@ end
 ---@param context LegendaryEditorContext
 function M.exec_item(item, context)
   vim.schedule(function()
+    -- Filtered keymaps (buffer-local, filetype-specific, plugin mappings, ...)
+    -- only make sense in the buffer they were collected from. Some pickers
+    -- restore focus to a different window when they close, so move back to the
+    -- context buffer before restoring mode/marks and feeding the keys.
+    if
+      Toolbox.is_keymap(item)
+      and item.filters
+      and #item.filters > 0
+      and context.buf
+      and vim.api.nvim_buf_is_valid(context.buf)
+    then
+      local win = vim.fn.bufwinid(context.buf)
+      if win ~= -1 and vim.api.nvim_win_is_valid(win) then
+        vim.api.nvim_set_current_win(win)
+      end
+    end
+
     M.restore_context(context, function()
       State.last_executed_item = item
       update_item_frecency_score(item)
