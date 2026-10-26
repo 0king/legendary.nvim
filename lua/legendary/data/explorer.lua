@@ -242,53 +242,6 @@ local function toggle_explorer()
   return false
 end
 
----@param win integer
----@return boolean
-local function is_explorer_window(win)
-  local buf = vim.api.nvim_win_get_buf(win)
-  local filetype = vim.bo[buf].filetype
-  if
-    filetype == 'NvimTree'
-    or filetype == 'neo-tree'
-    or filetype == 'oil'
-    or filetype:match('^snacks_picker_') ~= nil
-  then
-    return true
-  end
-  return vim.w[win].snacks_layout ~= nil
-end
-
----@return boolean
-local function focus_editor()
-  local picker = get_snacks_explorer()
-  if picker and picker.main and vim.api.nvim_win_is_valid(picker.main) then
-    vim.api.nvim_set_current_win(picker.main)
-    return true
-  end
-
-  local current = vim.api.nvim_get_current_win()
-  local previous = vim.fn.win_getid(vim.fn.winnr('#'))
-  if
-    previous ~= 0
-    and previous ~= current
-    and vim.api.nvim_win_is_valid(previous)
-    and not is_explorer_window(previous)
-  then
-    vim.api.nvim_set_current_win(previous)
-    return true
-  end
-
-  for _, win in ipairs(vim.api.nvim_tabpage_list_wins(0)) do
-    if win ~= current and not is_explorer_window(win) then
-      vim.api.nvim_set_current_win(win)
-      return true
-    end
-  end
-
-  notify('No editor window to focus.')
-  return false
-end
-
 ---@return string|nil
 local function current_file()
   local buf = vim.api.nvim_get_current_buf()
@@ -519,7 +472,6 @@ end
 M.actions = {
   explorer_action(focus_explorer, 'Focus explorer', { 'focus', 'open', 'file', 'tree', 'sidebar' }),
   explorer_action(toggle_explorer, 'Toggle explorer', { 'toggle', 'open', 'close', 'file', 'tree', 'sidebar' }),
-  explorer_action(focus_editor, 'Focus editor', { 'editor', 'focus', 'window', 'leave' }, true),
   explorer_action(
     reveal_current_file,
     'Reveal current file in explorer',

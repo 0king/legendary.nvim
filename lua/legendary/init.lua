@@ -100,6 +100,17 @@ local function lazy_load_stuff()
     State.items:add(vim.tbl_map(function(fn)
       return Function:parse(fn)
     end, Explorer.actions))
+
+    -- Hand-written layout navigation catalogue: executable actions for tab
+    -- focus and returning to the editor, plus description-only LazyVim tab
+    -- keymaps that are hidden when their binding is absent.
+    local Layout = require('legendary.data.layout')
+    State.items:add(vim.tbl_map(function(fn)
+      return Function:parse(fn)
+    end, Layout.actions))
+    State.items:add(vim.tbl_map(function(keymap)
+      return Keymap:parse(keymap)
+    end, Layout.keymaps))
   end
 
   if Config.include_legendary_cmds then
