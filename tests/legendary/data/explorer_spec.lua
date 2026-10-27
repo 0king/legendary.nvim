@@ -88,7 +88,7 @@ describe('Explorer catalogue', function()
     end)
   end)
 
-  it('filters selection actions to the explorer context', function()
+  it('filters selection actions to sessions with an open snacks explorer', function()
     local action
     for _, candidate in ipairs(Explorer.actions) do
       if candidate.description == 'Refresh explorer' then
@@ -99,13 +99,14 @@ describe('Explorer catalogue', function()
     assert.is_true(action ~= nil)
     local filter = action.filters[1]
     assert.is_false(filter(nil, { buf = 0, filetype = 'lua' }))
+    assert.is_true(filter(nil, { buf = 0, filetype = 'NvimTree' }))
 
     with_fake_explorer(function()
       assert.is_true(filter(nil, { buf = 42, filetype = 'snacks_picker_list' }))
       assert.is_true(filter(nil, { buf = 41, filetype = 'snacks_picker_input' }))
       assert.is_true(filter(nil, { buf = 40, filetype = 'lua' }))
-      assert.is_false(filter(nil, { buf = 43, filetype = 'snacks_picker_list' }))
-      assert.is_true(filter(nil, { buf = 0, filetype = 'NvimTree' }))
+      -- The palette may be opened from any buffer while the explorer is open.
+      assert.is_true(filter(nil, { buf = 43, filetype = 'lua' }))
     end)
   end)
 end)

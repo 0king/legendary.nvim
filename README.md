@@ -255,7 +255,11 @@ It also ships a hand-written file-explorer catalogue. When `include_builtin = tr
 the palette gains executable actions for focusing/toggling the explorer, revealing
 the current file, toggling hidden/ignored files, refreshing, collapsing, and the
 common file operations. The global actions support `snacks.nvim` and `nvim-tree.nvim`.
-When the palette is opened from a `snacks.explorer` buffer, description-only keymaps
+Actions that operate on the explorer selection (refresh, collapse, file operations) are
+available whenever a `snacks.explorer` is open, even with the cursor in an editor buffer;
+they act on the explorer's own selection. With `nvim-tree.nvim` they stay available only
+from the tree buffer, because its API acts on the tree cursor. When the palette is opened
+from a `snacks.explorer` buffer, description-only keymaps
 for the default bindings (`H` hidden, `I` ignored, `a` create, `d` delete, `r` rename,
 `c` copy, `m` move, `p` paste, `y` yank path, `Z` collapse all, `[g`/`]g` git hunks, ...)
 are shown too. They are filtered to the explorer buffer and are never bound by
@@ -263,7 +267,8 @@ legendary.
 
 A separate layout navigation catalogue adds executable actions for focusing the
 next/previous/first/last tab page and for moving focus from a layout window
-(explorer, terminal, help, quickfix) back to the editor. LazyVim's default
+(explorer, terminal, help, quickfix) back to the editor. "Focus editor" leaves
+focus untouched when it is already in an editor window. LazyVim's default
 `<leader><tab>` tab bindings are included as description-only keymaps; each entry
 is hidden unless that binding actually exists, so legendary never invents or binds
 a mapping itself.

@@ -4,7 +4,10 @@
 -- hidden/ignored files) are executable from any buffer and adapt to the
 -- explorer that is available: snacks.explorer is preferred, with nvim-tree as
 -- a fallback for the operations it exposes. Actions that operate on the
--- explorer's current selection or focus are filtered to the explorer buffer.
+-- explorer's current selection or focus are filtered to an open explorer, so
+-- they are reachable while editing as long as the explorer is visible; the
+-- action itself operates on the explorer's own selection. With nvim-tree they
+-- stay restricted to the tree buffer because its API acts on the tree cursor.
 -- The keymaps are description-only entries for the default snacks.explorer
 -- bindings. They are filtered to the explorer buffer so they only show up when
 -- the palette is opened from the file tree, and legendary never binds them
@@ -74,8 +77,12 @@ local function is_snacks_explorer(_, context)
   return picker_buf(get_snacks_explorer(), 'list') == context.buf
 end
 
----Filter actions that operate on the explorer's current selection down to the
----explorer itself. Global actions such as focus/toggle stay available anywhere.
+---Filter actions that operate on the explorer's current selection down to
+---sessions where an explorer is open. Snacks actions resolve the picker
+---themselves, so they also work with the cursor in an editor window; the
+---palette must not hide them just because it was opened from the editor.
+---nvim-tree stays restricted to the tree buffer because its API acts on the
+---tree cursor. Global actions such as focus/toggle stay available anywhere.
 ---@param _ LegendaryItem
 ---@param context LegendaryEditorContext
 ---@return boolean
@@ -86,14 +93,7 @@ local function is_explorer_context(_, context)
   if context.filetype == 'NvimTree' then
     return true
   end
-  local picker = get_snacks_explorer()
-  if not picker then
-    return false
-  end
-  local list_buf = picker_buf(picker, 'list')
-  local input_buf = picker_buf(picker, 'input')
-  local preview_buf = picker_buf(picker, 'preview')
-  return context.buf == list_buf or context.buf == input_buf or context.buf == preview_buf
+  return get_snacks_explorer() ~= nil
 end
 
 ---Resolve a snacks action name (including nested action tables) to a callable.

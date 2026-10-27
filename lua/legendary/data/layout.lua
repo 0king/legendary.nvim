@@ -67,19 +67,20 @@ local function is_layout_window(win)
   return vim.w[win].snacks_layout ~= nil
 end
 
----Move focus from a layout window back to the document area. Prefers the
----window that was focused before the layout window, then any other editor
----window in the current tab page.
+---Move focus from a layout window back to the document area. Does nothing
+---when focus is already in an editor window, so it never jumps to an
+---unrelated split. Prefers the window that was focused before the layout
+---window, then any other editor window in the current tab page.
 ---@return boolean
 local function focus_editor()
-  local picker = get_snacks_explorer()
-  if picker and picker.main and vim.api.nvim_win_is_valid(picker.main) then
-    vim.api.nvim_set_current_win(picker.main)
+  local current = vim.api.nvim_get_current_win()
+  if not is_layout_window(current) then
     return true
   end
 
-  local current = vim.api.nvim_get_current_win()
-  if not is_layout_window(current) then
+  local picker = get_snacks_explorer()
+  if picker and picker.main and vim.api.nvim_win_is_valid(picker.main) and picker.main ~= current then
+    vim.api.nvim_set_current_win(picker.main)
     return true
   end
 

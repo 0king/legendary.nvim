@@ -131,6 +131,44 @@ describe('Layout actions', function()
     assert.are.same(editor, vim.api.nvim_get_current_win())
   end)
 
+  it('does not jump to picker.main when already in an editor window', function()
+    local start_tab = vim.api.nvim_get_current_tabpage()
+    local old_snacks = rawget(_G, 'Snacks')
+    local old_loaded = package.loaded['snacks.picker']
+    local old_preload = package.preload['snacks.picker']
+
+    local ok, err = pcall(function()
+      vim.cmd('tabnew')
+      local other_editor = vim.api.nvim_get_current_win()
+      vim.cmd('vsplit')
+      local editor = vim.api.nvim_get_current_win()
+
+      _G.Snacks = {}
+      package.loaded['snacks.picker'] = nil
+      package.preload['snacks.picker'] = function()
+        return {
+          get = function()
+            return { { main = other_editor } }
+          end,
+        }
+      end
+
+      assert.is_true(find_action('Focus editor')[1]())
+      assert.are.same(editor, vim.api.nvim_get_current_win())
+    end)
+
+    _G.Snacks = old_snacks
+    package.loaded['snacks.picker'] = old_loaded
+    package.preload['snacks.picker'] = old_preload
+
+    vim.api.nvim_set_current_tabpage(start_tab)
+    vim.cmd('tabonly')
+
+    if not ok then
+      error(err)
+    end
+  end)
+
   it('leaves a floating window when focusing the editor', function()
     local editor = vim.api.nvim_get_current_win()
     local buf = vim.api.nvim_create_buf(false, true)
