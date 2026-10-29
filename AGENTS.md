@@ -18,6 +18,12 @@ Neovim Lua plugin (requires Neovim ≥ 0.7). Entrypoints: `lua/legendary/init.lu
 - `lua/legendary/api/` (`cmds`, `executor`), `ui/` (finder/`format.lua`), `extensions/` (one module per plugin, e.g. `lazy_nvim`, `which_key`), `config.lua`, `toolbox.lua`, `filters.lua`.
 - Tests live in `tests/legendary/**/*_spec.lua` (plenary busted + `luassert`); `tests/testrc.lua` sets `rtp` to repo + vendors.
 
+## Local LazyVim config — hands off
+
+- The user's LazyVim config lives at `~/.config/nvim` and is managed by `chezmoi`. **Never symlink this repo into it, and never install or deploy plugin changes there.** That includes `ln -s`, `cp`/`rsync`, adding `dev = { path = ... }` (or `dev = true`) entries to LazyVim specs, editing `lazy-lock.json`, and running `:Lazy sync`/`update`/`restore` against it.
+- The user applies every update to their own config themselves. This repo is developed and tested standalone (`make test`, `tests/testrc.lua`); loading it through the test harness `rtp` is fine, pointing Neovim at the real config is not.
+- If a change appears to require the live config to verify, stop and tell the user the exact steps instead of running them.
+
 ## Conventions / gotchas
 
 - Style: `stylua.toml` = spaces, width 2, `AutoPreferSingle`; `.luacheckrc` globals `vim`, ignores `lua/legendary/vendor/*.lua`. Keep `lua/legendary/vendor/lazy.lua` untouched.
