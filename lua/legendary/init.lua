@@ -52,6 +52,11 @@ end
 
 local M = {}
 
+-- Marker prepended to the mode/type column of hand-written builtin keymaps.
+-- Those shortcuts are curated in `legendary.data.builtins` rather than derived
+-- from the editor, so the marker distinguishes them from real user keymaps.
+local BUILTIN_KEYMAP_MARKER = '🏡'
+
 local lazy_loading_done = false
 local function lazy_load_stuff()
   if lazy_loading_done then
@@ -68,7 +73,9 @@ local function lazy_load_stuff()
     local Builtins = require('legendary.data.builtins')
 
     State.items:add(vim.tbl_map(function(keymap)
-      return Keymap:parse(keymap, true)
+      local item = Keymap:parse(keymap, true)
+      item.marker = item.marker or BUILTIN_KEYMAP_MARKER
+      return item
     end, Builtins.builtin_keymaps))
 
     State.items:add(vim.tbl_map(function(command)

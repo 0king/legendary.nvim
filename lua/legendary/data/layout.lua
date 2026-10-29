@@ -8,7 +8,11 @@
 -- description-only: legendary never binds them. A keymap is hidden unless its
 -- binding actually exists, so the entries stay valid outside LazyVim and after
 -- a custom leader change.
+--
+-- Catalogue keymaps carry the `👉` marker because their shortcuts are
+-- hand-written copies of LazyVim defaults and can drift from the real bindings.
 local M = {}
+local CATALOGUE_MARKER = '👉'
 
 ---@param msg string
 ---@param level? integer
@@ -128,6 +132,7 @@ local function layout_keymap(lhs, description, keywords)
     category = 'Layout',
     mode = 'n',
     keywords = all_keywords,
+    marker = CATALOGUE_MARKER,
     filters = {
       ---Hide description-only keymaps whose binding is not actually present.
       ---@param item Keymap

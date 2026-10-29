@@ -55,6 +55,11 @@ describe('Keymap', function()
       assert.are.same(keymap.description, tbl.description)
       assert.are.same(keymap.mode_mappings, tbl.mode)
     end)
+
+    it('preserves an optional catalogue marker', function()
+      local keymap = Keymap:parse({ '<leader>f', description = 'test', marker = '👉' })
+      assert.are.same('👉', keymap.marker)
+    end)
   end)
 
   describe('apply', function()

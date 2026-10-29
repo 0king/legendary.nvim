@@ -57,8 +57,12 @@ end
 ---@return string[]
 function M.default_format(item)
   if Toolbox.is_keymap(item) then
+    local type_col = Config.icons.keymap or table.concat(item--[[@as Keymap]]:modes(), ', ')
+    if item.marker and #item.marker > 0 then
+      type_col = string.format('%s %s', item.marker, type_col)
+    end
     return {
-      Config.icons.keymap or table.concat(item--[[@as Keymap]]:modes(), ', '),
+      type_col,
       item.keys,
       display_desc(item),
     }

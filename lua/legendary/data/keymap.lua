@@ -24,6 +24,7 @@ local Filters = require('legendary.data.filters')
 ---@field description string
 ---@field keywords string[]
 ---@field category string|nil
+---@field marker string|nil
 ---@field hide boolean
 ---@field opts table
 ---@field builtin boolean
@@ -48,6 +49,7 @@ function Keymap:parse(tbl, builtin) -- luacheck: no unused
     description = { util.get_desc(tbl), { 'string' }, true },
     keywords = { tbl.keywords, { 'string', 'table' }, true },
     category = { tbl.category, { 'string' }, true },
+    marker = { tbl.marker, { 'string' }, true },
     filters = { tbl.filters, { 'table' }, true },
   })
 
@@ -72,6 +74,7 @@ function Keymap:parse(tbl, builtin) -- luacheck: no unused
   instance.description = util.get_desc(tbl)
   instance.keywords = util.get_keywords(tbl)
   instance.category = util.get_category(tbl)
+  instance.marker = tbl.marker
   instance.opts = tbl.opts or {}
   instance.builtin = builtin or false
   instance:parse_filters(tbl.filters)

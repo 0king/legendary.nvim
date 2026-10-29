@@ -39,6 +39,7 @@ describe('Layout catalogue', function()
       assert.are.same('layout', keymap.keywords[1])
       assert.are.same('table', type(keymap.filters))
       assert.are.same('function', type(keymap.filters[1]))
+      assert.are.same('👉', keymap.marker)
     end
   end)
 

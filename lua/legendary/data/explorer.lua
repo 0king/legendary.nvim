@@ -12,7 +12,12 @@
 -- bindings. They are filtered to the explorer buffer so they only show up when
 -- the palette is opened from the file tree, and legendary never binds them
 -- itself.
+--
+-- Catalogue keymaps carry the `👉` marker because their shortcuts are
+-- hand-written copies of the plugin defaults; the marker flags them as
+-- potentially stale instead of deriving the keys from the explorer source.
 local M = {}
+local CATALOGUE_MARKER = '👉'
 
 ---@param msg string
 ---@param level? integer
@@ -567,6 +572,7 @@ local function explorer_keymap(lhs, description, keywords, opts)
     category = 'Explorer',
     keywords = all_keywords,
     mode = opts.mode,
+    marker = CATALOGUE_MARKER,
     filters = { is_snacks_explorer },
   }
 end

@@ -27,6 +27,7 @@ describe('Explorer catalogue', function()
       assert.are.same('explorer', keymap.keywords[1])
       assert.are.same('table', type(keymap.filters))
       assert.are.same('function', type(keymap.filters[1]))
+      assert.are.same('👉', keymap.marker)
     end
   end)
 
