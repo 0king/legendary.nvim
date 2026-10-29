@@ -1,10 +1,12 @@
-*legendary-keymap-tables.txt*                        Last change: 2023 July 06
+*legendary-keymap-tables.txt*                     Last change: 2026 October 14
 
 ==============================================================================
 Table of Contents                  *legendary-keymap-tables-table-of-contents*
 
 Basic Keymaps ........................ |legendary-keymap-tables-basic-keymaps|
 Adding keymaps to UI without the implementation  |legendary-keymap-tables-adding-keymaps-to-ui-without-the-implementation|
+Search keywords and categories (command palette)  |legendary-keymap-tables-search-keywords-and-categories-(command-palette)|
+Catalogue markers ................ |legendary-keymap-tables-catalogue-markers|
 Hiding keymaps from the UI  |legendary-keymap-tables-hiding-keymaps-from-the-ui|
 Helper functions .................. |legendary-keymap-tables-helper-functions|
 Specifying mode .................... |legendary-keymap-tables-specifying-mode|
@@ -47,6 +49,38 @@ omit the second entry (the "implementation"):
       { '<leader>fm', description = 'Format buffer with LSP' },
     }
 <
+
+------------------------------------------------------------------------------
+SEARCH KEYWORDS AND CATEGORIES (COMMAND PALETTE)*legendary-keymap-tables-search-keywords-and-categories-(command-palette)*
+
+
+Keymaps, commands and functions accept `keywords` (a string or list of
+strings) and `category` (a string). Both are embedded in the finder display
+text (`Description [Category] (keyword, ...)`) and in the item's searchable
+text, so any `vim.ui.select()` picker fuzzy-matches on human concepts:
+
+>lua
+    local keymaps = {
+      { 'y', description = 'Copy to clipboard', category = 'Clipboard', keywords = { 'copy', 'yank' } },
+    }
+<
+
+------------------------------------------------------------------------------
+CATALOGUE MARKERS                  *legendary-keymap-tables-catalogue-markers*
+
+
+An optional `marker` string is prepended to the mode/type column by the
+default formatter. It is meant for shortcut catalogues that are hand-written
+copies of another source and can therefore drift from the real bindings:
+
+>lua
+    local keymaps = {
+      { 'a', description = 'Create file or directory', marker = '👉' },
+    }
+<
+legendary.nvim uses `🏡` for the built-in keymap catalogue and `👉` for
+the file-explorer and layout catalogues.
+
 
 ------------------------------------------------------------------------------
 HIDING KEYMAPS FROM THE UI*legendary-keymap-tables-hiding-keymaps-from-the-ui*

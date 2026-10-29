@@ -251,6 +251,11 @@ LSP/Git/file actions) plus executable action commands (`:Copy`, `:Cut`, `:Paste`
 `keywords`, embedded in the finder text so any `vim.ui.select()` picker matches on
 human concepts (`copy`, `fold all`, `duplicate line`, `uppercase`, ...).
 
+Keymaps that come from a hand-written catalogue are tagged in the leftmost (type)
+column: `🏡` marks the built-in keymap catalogue, and `👉` marks the file-explorer
+and layout catalogues whose shortcuts are copies of plugin defaults. The marker is
+the optional per-item `marker` field, so any custom keymap can use it too.
+
 It also ships a hand-written file-explorer catalogue. When `include_builtin = true`,
 the palette gains executable actions for focusing/toggling the explorer, revealing
 the current file, toggling hidden/ignored files, refreshing, collapsing, and the

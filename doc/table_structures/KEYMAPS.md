@@ -40,6 +40,21 @@ local keymaps = {
 }
 ```
 
+## Catalogue markers
+
+An optional `marker` string is prepended to the mode/type column by the default
+formatter. It is meant for shortcut catalogues that are hand-written copies of
+another source and can therefore drift from the real bindings:
+
+```lua
+local keymaps = {
+  { 'a', description = 'Create file or directory', marker = '👉' },
+}
+```
+
+legendary.nvim uses `🏡` for the built-in keymap catalogue and `👉` for the
+file-explorer and layout catalogues.
+
 ## Hiding keymaps from the UI
 
 If you want to include a description, but do _not_ want the item to appear in the finder:
